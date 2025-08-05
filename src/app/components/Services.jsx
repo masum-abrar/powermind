@@ -17,8 +17,7 @@ export default function Services () {
             <span className='bg-yellow-500 ml-4 w-16 h-px'></span>
           </div>
           <p className='mx-auto mt-2 px-4 md:px-0 max-w-2xl text-gray-500 text-sm md:text-base'>
-            A visual journey through our finest lift installations,
-            modernization work, and service excellence across industries.
+           Providing comprehensive vertical transportation and power solutions
           </p>
         </div>
 

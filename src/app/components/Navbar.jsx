@@ -20,7 +20,7 @@ export default function Navbar () {
             <img
               src='/new logo.png'
               alt='Logo'
-              className='w-32 h-12 object-contain'
+              className='w-42 object-contain'
             />
           </div>
         </div>
