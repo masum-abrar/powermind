@@ -1,26 +1,60 @@
-'use client'
-import { useState } from 'react'
+"use client";
+import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-  })
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
-  const handleChange = e => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  const handleSubmit = async e => {
-    e.preventDefault()
-    alert('Message sent successfully! (This is a demo, no actual send)')
-    setFormData({ name: '', email: '', phone: '', message: '' })
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await fetch("https://powermind-backend.vercel.app/api/v1/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success(
+          "Message successfully sent! We will contact you shortly."
+        );
+        setFormData({ name: "", email: "", phone: "", message: "" });
+      } else {
+        setError(data?.message || "Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setError("Failed to send message. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="bg-gray-100 py-12">
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 8000,
+        }}
+      />
       {/* Title & SubTitle */}
       <div className="mb-12 text-center">
         <div className="flex justify-center items-center mb-4">
@@ -37,12 +71,17 @@ export default function ContactForm() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto px-4">
-        
         {/* Contact Form */}
         <div className="bg-white shadow-lg p-8 rounded-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {success && <p className="text-green-600 text-center">{success}</p>}
+            {error && <p className="text-red-600 text-center">{error}</p>}
+
             <div>
-              <label htmlFor="name" className="block font-medium text-gray-700 text-sm">
+              <label
+                htmlFor="name"
+                className="block font-medium text-gray-700 text-sm"
+              >
                 Name
               </label>
               <input
@@ -56,7 +95,10 @@ export default function ContactForm() {
               />
             </div>
             <div>
-              <label htmlFor="email" className="block font-medium text-gray-700 text-sm">
+              <label
+                htmlFor="email"
+                className="block font-medium text-gray-700 text-sm"
+              >
                 Email
               </label>
               <input
@@ -70,7 +112,10 @@ export default function ContactForm() {
               />
             </div>
             <div>
-              <label htmlFor="phone" className="block font-medium text-gray-700 text-sm">
+              <label
+                htmlFor="phone"
+                className="block font-medium text-gray-700 text-sm"
+              >
                 Phone
               </label>
               <input
@@ -83,13 +128,16 @@ export default function ContactForm() {
               />
             </div>
             <div>
-              <label htmlFor="message" className="block font-medium text-gray-700 text-sm">
+              <label
+                htmlFor="message"
+                className="block font-medium text-gray-700 text-sm"
+              >
                 Message
               </label>
               <textarea
                 name="message"
                 id="message"
-                rows="4"
+                rows={4}
                 value={formData.message}
                 onChange={handleChange}
                 required
@@ -98,9 +146,10 @@ export default function ContactForm() {
             </div>
             <button
               type="submit"
+              disabled={loading}
               className="bg-gradient-to-r from-yellow-500 hover:from-yellow-600 to-orange-600 hover:to-orange-700 shadow-lg hover:shadow-xl px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 w-full font-bold text-white transition-all duration-300"
             >
-              Send Message
+              {loading ? "Sending..." : "Send Message"}
             </button>
           </form>
         </div>
@@ -117,14 +166,13 @@ export default function ContactForm() {
               width="100%"
               height="300"
               style={{ border: 0 }}
-              allowFullScreen=""
+              allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>
         </div>
-
       </div>
     </section>
-  )
+  );
 }

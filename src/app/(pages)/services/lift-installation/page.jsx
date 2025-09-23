@@ -5,41 +5,41 @@ import { Transition } from '@headlessui/react'
 import { useState, useEffect } from 'react'
 import Navbar from '../../../components/Navbar'
 import Footer from '../../../components/Footer'
-
-const liftTypes = [
-  {
-    title: 'Home Lift',
-    image: '/project1-1.jpeg',
-    badge: 'Residential',
-    description:
-      'Perfect for multi-story private homes, offering quiet operation, elegant design, and space efficiency. Ideal for seniors or those with mobility challenges.',
-    feature: 'Low noise | Energy efficient | Compact design'
-  },
-  {
-    title: 'Hospital Lift',
-    image: '/project2-1.jpeg',
-    badge: 'Medical',
-    description:
-      'Designed for patient safety and hospital logistics. Accommodates stretchers, wheelchairs, and medical equipment with hygiene-focused interiors.',
-    feature: 'Stretcher support | Smooth ride | Sanitary walls'
-  },
-  {
-    title: 'Panoramic Lift',
-    image: '/project1-2.jpeg',
-    badge: 'Commercial',
-    description:
-      'Featuring transparent glass walls, these lifts add luxury and visibility—ideal for malls, hotels, or modern offices aiming for architectural elegance.',
-    feature: '360° view | Premium finish | Modern design'
-  }
-]
+import API from '../../../../lib/api'
+import PremiumSpinner from '../../../components/PremiumSpinner'
 
 export default function LiftInstallationPage () {
   const [loaded, setLoaded] = useState(false)
+  const [liftService, setLiftService] = useState(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 200)
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        const res = await API.get('/services')
+        const serviceData = res.data.find(s => s.slug === 'lift-installation')
+        setLiftService(serviceData)
+      } catch (error) {
+        console.error('Error fetching lift service:', error)
+      }
+    }
+
+    fetchService()
+  }, [])
+
+
+
+  if (!liftService) {
+    return (
+      <div className='flex justify-center items-center h-screen'>
+        <p className='text-gray-600'> <PremiumSpinner/> </p>
+      </div>
+    )
+  }
 
   return (
     <>
@@ -47,19 +47,17 @@ export default function LiftInstallationPage () {
       <div className='mx-auto px-4 py-16 max-w-7xl'>
         <div className='space-y-4 mb-16 text-center'>
           <h1 className='font-extrabold text-yellow-600 text-4xl'>
-            Lift Installation Service
+            {liftService.title}
           </h1>
           <p className='mx-auto max-w-2xl text-gray-700 text-lg leading-relaxed'>
-            We install all types of lifts with certified safety standards and
-            premium design aesthetics. Whether you're building a home or a
-            hospital, we tailor the lift experience to your needs.
+            {liftService.fullDescription}
           </p>
         </div>
 
         <div className='space-y-24 px-4 sm:px-6 lg:px-12'>
-          {liftTypes.map((lift, i) => (
+          {liftService.liftTypes.map((lift, i) => (
             <Transition
-              key={i}
+              key={lift.id}
               show={loaded}
               enter='transition-opacity duration-1000 delay-[300ms]'
               enterFrom='opacity-0 translate-y-6'
@@ -94,7 +92,7 @@ export default function LiftInstallationPage () {
                     {lift.description}
                   </p>
                   <div className='text-gray-500 text-sm italic'>
-                    {lift.feature}
+                    {lift.feature.join(' || ')}
                   </div>
                   <div className='bg-yellow-400 rounded w-16 h-1'></div>
                 </div>
@@ -103,7 +101,7 @@ export default function LiftInstallationPage () {
           ))}
         </div>
       </div>
-      <Footer></Footer>
+      <Footer />
     </>
   )
 }
