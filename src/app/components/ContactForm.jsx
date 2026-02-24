@@ -24,17 +24,20 @@ export default function ContactForm() {
     setSuccess("");
 
     try {
-      const res = await fetch("https://powermind-backend.vercel.app/api/v1/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        "https://powermind-backend.vercel.app/api/v1/contact",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        },
+      );
 
       const data = await res.json();
 
       if (res.ok) {
         toast.success(
-          "Message successfully sent! We will contact you shortly."
+          "Message successfully sent! We will contact you shortly.",
         );
         setFormData({ name: "", email: "", phone: "", message: "" });
       } else {
@@ -157,8 +160,9 @@ export default function ContactForm() {
         {/* Map + Address */}
         <div className="bg-white shadow-lg p-6 rounded-lg flex flex-col gap-4">
           <h2 className="text-lg font-semibold text-gray-800">Our Location</h2>
+          <p className="text-gray-600 text-sm">Corporate Office</p>
           <p className="text-gray-600 text-sm">
-            📍 Shop A-10, Kha 49/C, Islam Complex, Dhaka 1230
+            📍 House#40-42,Road-12, Nikunjo -2,Dhaka-1229
           </p>
           <div className="rounded-lg overflow-hidden shadow">
             <iframe
